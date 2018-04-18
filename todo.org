@@ -1,0 +1,8 @@
+* TODOS
+** TODO allow the crud of eggs (boilerplates)
+*** save them to the home directory
+
+* Things we should have
+** A way to create repos using an egg
+** Either a home repo or specific git profiles to use to try and dynamically 
+   obtain remotes
