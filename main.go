@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"github.com/ttacon/chalk"
 	"github.com/urfave/cli"
 	"os"
 )
@@ -19,7 +20,7 @@ func main() {
 	}
 
 	app.Action = func(c *cli.Context) error {
-		fmt.Println("Add a boilerplate project today!")
+		fmt.Println(chalk.Magenta.Color("Add a boilerplate project today!"))
 		return nil
 	}
 
