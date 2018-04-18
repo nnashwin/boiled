@@ -2,8 +2,8 @@ package main
 
 import (
 	"fmt"
+	"github.com/fatih/color"
 	"github.com/mitchellh/go-homedir"
-	"github.com/ttacon/chalk"
 	"github.com/urfave/cli"
 	"log"
 	"os"
@@ -19,6 +19,8 @@ func doesFileExist(path string) bool {
 }
 
 func main() {
+
+	red := color.New(color.FgRed).SprintFunc()
 	app := cli.NewApp()
 	app.Name = "Boiled"
 	app.Version = "0.1.0"
@@ -31,7 +33,7 @@ func main() {
 	}
 
 	app.Action = func(c *cli.Context) error {
-		fmt.Println(chalk.Magenta.Color("Add a boilerplate project today!"))
+		color.Magenta("Add a boilerplate project today!")
 		return nil
 	}
 
@@ -47,7 +49,7 @@ func main() {
 				}
 
 				if doesFileExist(homeDir+"/.boiled/eggCarton.json") == false {
-					return fmt.Errorf(chalk.Red.Color("You currently do not have any eggs.  Add a boilerplate and run again!"))
+					return fmt.Errorf(red("You currently do not have any eggs.  Add a boilerplate and run again!"))
 				}
 
 				return nil
