@@ -9,6 +9,10 @@ import (
 	"os"
 )
 
+var Carton = struct {
+	Eggs map[string]Egg `json:"eggs,omitempty"`
+}{}
+
 func main() {
 	errCol := color.New(color.FgRed).SprintFunc()
 
