@@ -10,8 +10,8 @@ import (
 )
 
 func main() {
+	errCol := color.New(color.FgRed).SprintFunc()
 
-	red := color.New(color.FgRed).SprintFunc()
 	app := cli.NewApp()
 	app.Name = "Boiled"
 	app.Version = "0.1.0"
@@ -40,7 +40,25 @@ func main() {
 				}
 
 				if pathfinder.DoesExist(homeDir+"/.boiled/eggCarton.json") == false {
-					return fmt.Errorf(red("You currently do not have any eggs.  Add a boilerplate and run again!"))
+					return fmt.Errorf(errCol("You currently do not have any eggs.  Add a boilerplate and run again!"))
+				}
+
+				return nil
+			},
+		},
+
+		{
+			Name:    "carton create",
+			Aliases: []string{"cc"},
+			Usage:   "creates a new carton for your eggs if it does not already exist",
+			Action: func(c *cli.Context) error {
+				homeDir, err := homedir.Dir()
+				if err != nil {
+					panic(err)
+				}
+
+				if pathfinder.DoesExist(homeDir+"./boiled/eggCarton.json") == true {
+					return fmt.Errorf(errCol("You already have a carton with eggs.  Use the egg create command to add a new egg."))
 				}
 
 				return nil
