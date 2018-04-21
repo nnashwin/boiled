@@ -9,12 +9,20 @@ import (
 	"os"
 )
 
+// Carton is a map of all of the eggs in your conf file
 var Carton = struct {
 	Eggs map[string]Egg `json:"eggs,omitempty"`
 }{}
 
 func main() {
 	errCol := color.New(color.FgRed).SprintFunc()
+
+	homeDir, err := homedir.Dir()
+	if err != nil {
+		panic(err)
+	}
+
+	credStr := homeDir + "/.boiled/carton.json"
 
 	app := cli.NewApp()
 	app.Name = "Boiled"
@@ -38,11 +46,6 @@ func main() {
 			Aliases: []string{"el"},
 			Usage:   "list all of the eggs you have in your boiled config",
 			Action: func(c *cli.Context) error {
-				homeDir, err := homedir.Dir()
-				if err != nil {
-					panic(err)
-				}
-
 				if pathfinder.DoesExist(homeDir+"/.boiled/eggCarton.json") == false {
 					return fmt.Errorf(errCol("You currently do not have any eggs.  Add a boilerplate and run again!"))
 				}
@@ -52,25 +55,25 @@ func main() {
 		},
 
 		{
-			Name:    "carton create",
-			Aliases: []string{"cc"},
-			Usage:   "creates a new carton for your eggs if it does not already exist",
+			Name:    "egg create",
+			Aliases: []string{"ec"},
+			Usage:   "creates a new egg",
 			Action: func(c *cli.Context) error {
-				homeDir, err := homedir.Dir()
-				if err != nil {
-					panic(err)
+				if pathfinder.DoesExist(credStr) == false {
+					err := pathfinder.CreateFile(credStr)
+					if err != nil {
+						return fmt.Errorf(errCol(err))
+					}
 				}
 
-				if pathfinder.DoesExist(homeDir+"./boiled/eggCarton.json") == true {
-					return fmt.Errorf(errCol("You already have a carton with eggs.  Use the egg create command to add a new egg."))
-				}
+				fmt.Printf("%+v", c.Args())
 
 				return nil
 			},
 		},
 	}
 
-	err := app.Run(os.Args)
+	err = app.Run(os.Args)
 	if err != nil {
 		fmt.Println(err)
 		return
