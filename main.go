@@ -4,18 +4,10 @@ import (
 	"fmt"
 	"github.com/fatih/color"
 	"github.com/mitchellh/go-homedir"
+	"github.com/ru-lai/pathfinder"
 	"github.com/urfave/cli"
 	"os"
 )
-
-func doesFileExist(path string) bool {
-	_, err := os.Stat(path)
-
-	if os.IsNotExist(err) {
-		return false
-	}
-	return true
-}
 
 func main() {
 
@@ -47,7 +39,7 @@ func main() {
 					panic(err)
 				}
 
-				if doesFileExist(homeDir+"/.boiled/eggCarton.json") == false {
+				if pathfinder.DoesExist(homeDir+"/.boiled/eggCarton.json") == false {
 					return fmt.Errorf(red("You currently do not have any eggs.  Add a boilerplate and run again!"))
 				}
 
