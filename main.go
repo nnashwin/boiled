@@ -7,6 +7,7 @@ import (
 	"github.com/mitchellh/go-homedir"
 	"github.com/ru-lai/pathfinder"
 	"github.com/urfave/cli"
+	"gopkg.in/AlecAivazis/survey.v1"
 	"io/ioutil"
 	"os"
 )
@@ -61,6 +62,7 @@ func main() {
 			Aliases: []string{"ec"},
 			Usage:   "creates a new egg",
 			Action: func(c *cli.Context) error {
+
 				if pathfinder.DoesExist(credStr) == false {
 					err := pathfinder.CreateFile(credStr)
 					if err != nil {
@@ -90,6 +92,13 @@ func main() {
 				if Carton.Eggs[eggNick] != (Egg{}) {
 					return fmt.Errorf(errCol("The egg %s already exists."), eggNick)
 				}
+
+				useCurrDir := false
+				prompt := &survey.Confirm{
+					Message: "Do you want to use the files in your curr dir as your boilerplate?",
+				}
+
+				survey.AskOne(prompt, &useCurrDir, nil)
 
 				Carton.Eggs[eggNick] = Egg{eggNick}
 
