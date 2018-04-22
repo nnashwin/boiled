@@ -1,11 +1,13 @@
 package main
 
 import (
+	"encoding/json"
 	"fmt"
 	"github.com/fatih/color"
 	"github.com/mitchellh/go-homedir"
 	"github.com/ru-lai/pathfinder"
 	"github.com/urfave/cli"
+	"io/ioutil"
 	"os"
 )
 
@@ -66,7 +68,38 @@ func main() {
 					}
 				}
 
-				fmt.Printf("%+v", c.Args())
+				content, err := ioutil.ReadFile(credStr)
+				if err != nil {
+					return fmt.Errorf(errCol(err))
+				}
+
+				// if the file contains a json object,  marshal it to the to the Carton
+				if len(content) > 0 {
+					err = json.Unmarshal(content, &Carton)
+					if err != nil {
+						return fmt.Errorf(errCol(err))
+					}
+				}
+
+				// if the Carton is empty, create a carton
+				if Carton.Eggs == nil {
+					Carton.Eggs = make(map[string]Egg)
+				}
+
+				eggNick := c.Args()[0]
+				if Carton.Eggs[eggNick] != (Egg{}) {
+					return fmt.Errorf(errCol("The egg %s already exists."), eggNick)
+				}
+
+				Carton.Eggs[eggNick] = Egg{eggNick}
+
+				// recopy / write the carton
+				b, err := json.Marshal(Carton)
+				if err != nil {
+					return fmt.Errorf(errCol(err))
+				}
+
+				ioutil.WriteFile(credStr, b, os.ModePerm)
 
 				return nil
 			},
