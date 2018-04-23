@@ -2,6 +2,7 @@ package main
 
 import (
 	"io/ioutil"
+	"os"
 	"reflect"
 	"testing"
 )
@@ -31,6 +32,11 @@ func TestCopyFile(t *testing.T) {
 
 		if reflect.DeepEqual(expected, actual) == false {
 			t.Error(c.FailMsg)
+		}
+
+		err = os.RemoveAll("./fixtures/copy-dir/copy-file-test2.txt")
+		if err != nil {
+			t.Error(err)
 		}
 	}
 }
