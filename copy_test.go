@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"io/ioutil"
 	"os"
 	"reflect"
@@ -38,5 +39,30 @@ func TestCopyFile(t *testing.T) {
 		if err != nil {
 			t.Error(err)
 		}
+	}
+}
+
+func TestCopyDir(t *testing.T) {
+	filePath := "./fixtures/copy-dir"
+	files, err := ioutil.ReadDir(filePath)
+	if err != nil {
+		t.Error(err)
+	}
+
+	CopyDir(filePath, "./fixtures/copy-dir2")
+
+	copiedFiles, err := ioutil.ReadDir("./fixtures/copy-dir2")
+	if err != nil {
+		t.Error(err)
+	}
+
+	for i, file := range files {
+		fmt.Println(file.Name())
+		fmt.Println(copiedFiles[i].Name())
+	}
+
+	err = os.RemoveAll("./fixtures/copy-dir2")
+	if err != nil {
+		t.Error(err)
 	}
 }
