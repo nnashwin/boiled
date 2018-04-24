@@ -124,6 +124,51 @@ func main() {
 				return nil
 			},
 		},
+
+		{
+			Name:    "egg delete",
+			Aliases: []string{"ed"},
+			Usage:   "deletes an existing egg and the stored directory used to store it",
+			Action: func(c *cli.Context) error {
+				eggNick := c.Args()[0]
+				if eggNick == "" {
+					return fmt.Errorf(errCol("You must enter the name of the egg to delete it"))
+				}
+
+				content, err := ioutil.ReadFile(credStr)
+				if err != nil {
+					return fmt.Errorf(errCol(err))
+				}
+
+				if len(content) > 0 {
+					err = json.Unmarshal(content, &Carton)
+					if err != nil {
+						return fmt.Errorf(errCol(err))
+					}
+				}
+
+				if _, ok := Carton.Eggs[eggNick]; ok == false {
+					return fmt.Errorf(errCol("The egg \"%s\" doesn't exist in the carton"), eggNick)
+				}
+
+				if Carton.Eggs[eggNick].HasData != false {
+					os.RemoveAll(filepath.Join(homeDir, dirPath, eggNick))
+				}
+
+				delete(Carton.Eggs, eggNick)
+
+				b, err := json.Marshal(Carton)
+				if err != nil {
+					return fmt.Errorf(errCol(err))
+				}
+
+				ioutil.WriteFile(credStr, b, os.ModePerm)
+
+				color.Magenta("The boilerplate \"%s\" has been deleted from your carton.", eggNick)
+
+				return nil
+			},
+		},
 	}
 
 	err = app.Run(os.Args)
