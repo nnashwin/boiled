@@ -1,7 +1,6 @@
 package main
 
 import (
-	"fmt"
 	"io/ioutil"
 	"os"
 	"reflect"
@@ -44,7 +43,14 @@ func TestCopyFile(t *testing.T) {
 
 func TestCopyDir(t *testing.T) {
 	filePath := "./fixtures/copy-dir"
+	nestPath := "/nested-dir"
+
 	files, err := ioutil.ReadDir(filePath)
+	if err != nil {
+		t.Error(err)
+	}
+
+	nestFiles, err := ioutil.ReadDir(filePath + nestPath)
 	if err != nil {
 		t.Error(err)
 	}
@@ -57,8 +63,20 @@ func TestCopyDir(t *testing.T) {
 	}
 
 	for i, file := range files {
-		fmt.Println(file.Name())
-		fmt.Println(copiedFiles[i].Name())
+		if file.Name() != copiedFiles[i].Name() {
+			t.Errorf("The files copied in the copy-dir directories do not match:\nfileName: %s\ncopyFileName: %s", file.Name(), copiedFiles[i].Name())
+		}
+	}
+
+	nestCopyFiles, err := ioutil.ReadDir("./fixtures/copy-dir2" + nestPath)
+	if err != nil {
+		t.Error(err)
+	}
+
+	for i, file := range nestFiles {
+		if file.Name() != nestCopyFiles[i].Name() {
+			t.Errorf("The files copied in the nested-dir directories do not match:\nfileName: %s\nnestedFileName: %s", file.Name(), nestCopyFiles[i].Name())
+		}
 	}
 
 	err = os.RemoveAll("./fixtures/copy-dir2")
