@@ -103,7 +103,14 @@ func main() {
 
 				survey.AskOne(prompt, &useCurrDir, nil)
 
-				Carton.Eggs[eggNick] = Egg{eggNick}
+				if useCurrDir == true {
+					err = CopyDir(".", filepath.Join(homeDir, dirPath, eggNick))
+					if err != nil {
+						return fmt.Errorf(errCol(err))
+					}
+				}
+
+				Carton.Eggs[eggNick] = Egg{eggNick, useCurrDir}
 				// recopy / write the carton
 				b, err := json.Marshal(Carton)
 				if err != nil {
@@ -111,13 +118,6 @@ func main() {
 				}
 
 				ioutil.WriteFile(credStr, b, os.ModePerm)
-
-				if useCurrDir == true {
-					err = CopyDir(".", filepath.Join(homeDir, dirPath, eggNick))
-					if err != nil {
-						return fmt.Errorf(errCol(err))
-					}
-				}
 
 				color.Magenta("The boilerplate \"%s\" has been added to your carton.", eggNick)
 
