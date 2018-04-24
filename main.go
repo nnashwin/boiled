@@ -10,6 +10,7 @@ import (
 	"gopkg.in/AlecAivazis/survey.v1"
 	"io/ioutil"
 	"os"
+	"path/filepath"
 )
 
 // Carton is a map of all of the eggs in your conf file
@@ -25,7 +26,9 @@ func main() {
 		panic(err)
 	}
 
-	credStr := homeDir + "/.boiled/carton.json"
+	dirPath := ".boiled"
+
+	credStr := filepath.Join(homeDir, dirPath, "carton.json")
 
 	app := cli.NewApp()
 	app.Name = "Boiled"
@@ -101,7 +104,6 @@ func main() {
 				survey.AskOne(prompt, &useCurrDir, nil)
 
 				Carton.Eggs[eggNick] = Egg{eggNick}
-
 				// recopy / write the carton
 				b, err := json.Marshal(Carton)
 				if err != nil {
@@ -109,6 +111,15 @@ func main() {
 				}
 
 				ioutil.WriteFile(credStr, b, os.ModePerm)
+
+				if useCurrDir == true {
+					err = CopyDir(".", filepath.Join(homeDir, dirPath, eggNick))
+					if err != nil {
+						return fmt.Errorf(errCol(err))
+					}
+				}
+
+				color.Magenta("The boilerplate \"%s\" has been added to your carton.", eggNick)
 
 				return nil
 			},
