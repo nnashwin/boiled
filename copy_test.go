@@ -47,7 +47,7 @@ func TestCopyDir(t *testing.T) {
 
 	ignoreList := make(map[string]struct{})
 	// add .gitignore to the map
-	ignoreList[".gitignore"] = struct{}{}
+	ignoreList[".gitignore"], ignoreList["skip-dir"] = struct{}{}, struct{}{}
 
 	files, err := ioutil.ReadDir(filePath)
 	if err != nil {
@@ -67,10 +67,9 @@ func TestCopyDir(t *testing.T) {
 	}
 
 	// remove the .gitignore from the slice of files in the copy-dir so the names between the two will match
-	for i, v := range files {
-		if v.Name() == ".gitignore" {
+	for i := len(files) - 1; i >= 0; i-- {
+		if files[i].Name() == ".gitignore" || files[i].Name() == "skip-dir" {
 			files = append(files[:i], files[i+1:]...)
-			break
 		}
 	}
 
