@@ -51,7 +51,7 @@ func CopyFile(src, dst string) (err error) {
 	return
 }
 
-func CopyDir(src, dst string) (err error) {
+func CopyDir(src, dst string, ignoreList map[string]struct{}) (err error) {
 	src = filepath.Clean(src)
 	dst = filepath.Clean(dst)
 
@@ -84,15 +84,20 @@ func CopyDir(src, dst string) (err error) {
 	for _, entry := range entries {
 		srcPath := filepath.Join(src, entry.Name())
 		dstPath := filepath.Join(dst, entry.Name())
-
+		fmt.Println(entry.Name())
 		if entry.IsDir() {
-			err = CopyDir(srcPath, dstPath)
+			err = CopyDir(srcPath, dstPath, ignoreList)
 			if err != nil {
 				return
 			}
 		} else {
 			// Skip symlinks.
 			if entry.Mode()&os.ModeSymlink != 0 {
+				continue
+			}
+
+			// Skip files on the ignore list
+			if _, ok := ignoreList[entry.Name()]; ok {
 				continue
 			}
 

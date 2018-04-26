@@ -45,6 +45,10 @@ func TestCopyDir(t *testing.T) {
 	filePath := "./fixtures/copy-dir"
 	nestPath := "/nested-dir"
 
+	ignoreList := make(map[string]struct{})
+	// add .gitignore to the map
+	ignoreList[".gitignore"] = struct{}{}
+
 	files, err := ioutil.ReadDir(filePath)
 	if err != nil {
 		t.Error(err)
@@ -55,11 +59,19 @@ func TestCopyDir(t *testing.T) {
 		t.Error(err)
 	}
 
-	CopyDir(filePath, "./fixtures/copy-dir2")
+	CopyDir(filePath, "./fixtures/copy-dir2", ignoreList)
 
 	copiedFiles, err := ioutil.ReadDir("./fixtures/copy-dir2")
 	if err != nil {
 		t.Error(err)
+	}
+
+	// remove the .gitignore from the slice of files in the copy-dir so the names between the two will match
+	for i, v := range files {
+		if v.Name() == ".gitignore" {
+			files = append(files[:i], files[i+1:]...)
+			break
+		}
 	}
 
 	for i, file := range files {

@@ -104,7 +104,7 @@ func main() {
 				survey.AskOne(prompt, &useCurrDir, nil)
 
 				if useCurrDir == true {
-					err = CopyDir(".", filepath.Join(homeDir, dirPath, eggNick))
+					err = CopyDir(".", filepath.Join(homeDir, dirPath, eggNick), make(map[string]struct{}))
 					if err != nil {
 						return fmt.Errorf(errCol(err))
 					}
