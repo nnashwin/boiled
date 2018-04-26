@@ -67,6 +67,7 @@ func CopyDir(src, dst string, ignoreList map[string]struct{}) (err error) {
 	if err != nil && !os.IsNotExist(err) {
 		return
 	}
+
 	if err == nil {
 		return fmt.Errorf("destination already exists")
 	}
@@ -84,7 +85,12 @@ func CopyDir(src, dst string, ignoreList map[string]struct{}) (err error) {
 	for _, entry := range entries {
 		srcPath := filepath.Join(src, entry.Name())
 		dstPath := filepath.Join(dst, entry.Name())
-		fmt.Println(entry.Name())
+
+		// Skip files or dirs which are on the ignore list
+		if _, ok := ignoreList[entry.Name()]; ok {
+			continue
+		}
+
 		if entry.IsDir() {
 			err = CopyDir(srcPath, dstPath, ignoreList)
 			if err != nil {
@@ -93,11 +99,6 @@ func CopyDir(src, dst string, ignoreList map[string]struct{}) (err error) {
 		} else {
 			// Skip symlinks.
 			if entry.Mode()&os.ModeSymlink != 0 {
-				continue
-			}
-
-			// Skip files on the ignore list
-			if _, ok := ignoreList[entry.Name()]; ok {
 				continue
 			}
 
