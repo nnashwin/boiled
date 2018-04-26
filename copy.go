@@ -51,7 +51,7 @@ func CopyFile(src, dst string) (err error) {
 	return
 }
 
-func CopyDir(src string, dst string) (err error) {
+func CopyDir(src, dst string) (err error) {
 	src = filepath.Clean(src)
 	dst = filepath.Clean(dst)
 
