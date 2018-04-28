@@ -52,7 +52,7 @@ func main() {
 			Aliases: []string{"el"},
 			Usage:   "list all of the eggs you have in your boiled config",
 			Action: func(c *cli.Context) error {
-				if pathfinder.DoesExist(homeDir+"/.boiled/eggCarton.json") == false {
+				if pathfinder.DoesExist(credStr) == false {
 					return fmt.Errorf(errCol("You currently do not have any eggs.  Add a boilerplate and run again!"))
 				}
 
