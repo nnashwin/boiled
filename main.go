@@ -18,6 +18,19 @@ var Carton = struct {
 	Eggs map[string]Egg `json:"eggs,omitempty"`
 }{}
 
+var createQs = []*survey.Question{
+	{
+		Name: "useCurrDir",
+		Prompt: &survey.Confirm{
+			Message: "Do you want to use the files in your curr dir as your boilerplate?",
+		},
+	},
+	{
+		Name:   "description",
+		Prompt: &survey.Input{Message: "Please enter a description for your boilerplate."},
+	},
+}
+
 func main() {
 	errCol := color.New(color.FgRed).SprintFunc()
 
@@ -56,6 +69,25 @@ func main() {
 					return fmt.Errorf(errCol("You currently do not have any eggs.  Add a boilerplate and run again!"))
 				}
 
+				content, err := ioutil.ReadFile(credStr)
+				if err != nil {
+					return fmt.Errorf(errCol(err))
+				}
+
+				// if the file contains a json object,  marshal it to the to the Carton
+				if len(content) > 0 {
+					err = json.Unmarshal(content, &Carton)
+					if err != nil {
+						return fmt.Errorf(errCol(err))
+					}
+				}
+
+				fmt.Println("Eggs")
+				fmt.Printf("%+v", Carton)
+				for _, egg := range Carton.Eggs {
+					fmt.Printf("%+v", egg)
+				}
+
 				return nil
 			},
 		},
@@ -65,7 +97,7 @@ func main() {
 			Aliases: []string{"ec"},
 			Usage:   "creates a new egg",
 			Action: func(c *cli.Context) error {
-
+				// create the carton file if it doesn't exist
 				if pathfinder.DoesExist(credStr) == false {
 					err := pathfinder.CreateFile(credStr)
 					if err != nil {
@@ -96,21 +128,26 @@ func main() {
 					return fmt.Errorf(errCol("The egg %s already exists."), eggNick)
 				}
 
-				useCurrDir := false
-				prompt := &survey.Confirm{
-					Message: "Do you want to use the files in your curr dir as your boilerplate?",
+				// set up prompt
+				answers := struct {
+					UseCurrDir  bool
+					Description string
+				}{}
+
+				err = survey.Ask(createQs, &answers)
+				if err != nil {
+					return fmt.Errorf(errCol(err))
 				}
 
-				survey.AskOne(prompt, &useCurrDir, nil)
-
-				if useCurrDir == true {
+				if answers.UseCurrDir == true {
 					err = CopyDir(".", filepath.Join(homeDir, dirPath, eggNick), make(map[string]struct{}))
 					if err != nil {
 						return fmt.Errorf(errCol(err))
 					}
 				}
 
-				Carton.Eggs[eggNick] = Egg{eggNick, useCurrDir}
+				Carton.Eggs[eggNick] = Egg{eggNick, answers.UseCurrDir, answers.Description}
+
 				// recopy / write the carton
 				b, err := json.Marshal(Carton)
 				if err != nil {
