@@ -82,10 +82,9 @@ func main() {
 					}
 				}
 
-				fmt.Println("Eggs")
-				fmt.Printf("%+v", Carton)
+				color.Magenta("List of boilerplates in your Carton:\n")
 				for _, egg := range Carton.Eggs {
-					fmt.Printf("%+v", egg)
+					color.Magenta(fmt.Sprintf("Egg Name: %s\nDescription: %s\nHas Data: %t\n\n", egg.Nick, egg.Description, egg.HasData))
 				}
 
 				return nil
