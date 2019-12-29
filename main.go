@@ -47,8 +47,8 @@ func main() {
 	app.Name = "Boiled"
 	app.Version = "0.1.0"
 	app.Usage = "a tool to create and manage boilerplate applications"
-	app.Authors = []cli.Author{
-		cli.Author{
+	app.Authors = []*cli.Author{
+		&cli.Author{
 			Name:  "Tyler Boright",
 			Email: "ru.lai.development@gmail.com",
 		},
@@ -59,7 +59,7 @@ func main() {
 		return nil
 	}
 
-	app.Commands = []cli.Command{
+	app.Commands = []*cli.Command{
 		{
 			Name:    "egg list",
 			Aliases: []string{"el"},
@@ -122,7 +122,7 @@ func main() {
 					Carton.Eggs = make(map[string]Egg)
 				}
 
-				eggNick := c.Args()[0]
+				eggNick := c.Args().Get(0)
 				if Carton.Eggs[eggNick] != (Egg{}) {
 					return fmt.Errorf(errCol("The egg %s already exists."), eggNick)
 				}
@@ -166,7 +166,7 @@ func main() {
 			Aliases: []string{"ed"},
 			Usage:   "deletes an existing egg and the stored directory used to store it",
 			Action: func(c *cli.Context) error {
-				eggNick := c.Args()[0]
+				eggNick := c.Args().Get(0)
 				if eggNick == "" {
 					return fmt.Errorf(errCol("You must enter the name of the egg to delete it"))
 				}
