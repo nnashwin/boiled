@@ -8,10 +8,7 @@ import (
 	"path/filepath"
 )
 
-//
-// Found at this gist: https://gist.github.com/r0l1/92462b38df26839a3ca324697c8cba04
-//
-//
+// Found at gist: https://gist.github.com/r0l1/92462b38df26839a3ca324697c8cba04
 func CopyFile(src, dst string) (err error) {
 	in, err := os.Open(src)
 	if err != nil {
